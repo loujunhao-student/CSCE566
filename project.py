@@ -245,7 +245,7 @@ class GCL(layers.Layer):
         self.combination_type = combination_type
         self.normalize = normalize
         self.ffn_prepare = create_ffn(hidden_units,dropout_rate)
-        if (self.aggregation_type=="gru"):
+        if (self.combination_type=="gru"):
             self.update_fn = create_gru(hidden_units,dropout_rate)
         else:
             self.update_fn = create_ffn(hidden_units,dropout_rate)
@@ -401,3 +401,4 @@ print("GNN test accuracy = ", test_accuracy_GNN)
         
         
         
+

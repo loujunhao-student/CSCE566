@@ -40,69 +40,69 @@ def split_50_50(examples):
 
 # Section 1: prepare data
 
-# method 1, use example [1]'s source to download cora.cites and cora.contents
-# in example [1]'s format
-zip_file = keras.utils.get_file(
-    fname="cora.tgz",
-    origin="https://linqs-data.soe.ucsc.edu/public/lbc/cora.tgz",
-    extract=True,
-    )
+# # method 1, use example [1]'s source to download cora.cites and cora.contents
+# # in example [1]'s format
+# zip_file = keras.utils.get_file(
+#     fname="cora.tgz",
+#     origin="https://linqs-data.soe.ucsc.edu/public/lbc/cora.tgz",
+#     extract=True,
+#     )
 
-data_dir = os.path.join(os.path.dirname(zip_file), "cora_extracted\\cora")
+# data_dir = os.path.join(os.path.dirname(zip_file), "cora_extracted\\cora")
 
-citations = pd.read_csv(
-    os.path.join(data_dir, "cora.cites"),
-    sep="\t",
-    header=None,
-    names=["cited_paper_id","citing_paper_id"],
-    )
-
-print(citations)
-
-papers = pd.read_csv(
-    os.path.join(data_dir, "cora.content"),
-    sep="\t",
-    header=None,
-    names=["paper_id"] + [f"word_{index}" for index in range(1433)] + ["class_label"],
-    )
-
-print(papers)
-    
-# # method 2:
-# # directly download CORA database tables (cites, content and paper) from 
-# # relational-data.org using SQL workbench's table export function with csv 
-# # format with "," separator. Then merge content and paper table to generate
-# # similar table in example [1]'s format. Because original content table's
-# # word_cited_id column is not sorted, so get_dummies function cannot get a
-# # sorted collumns, but still ok for training or testing as long as software
-# # remember the order of columns in generate contents_word_vector table.
-
-# cite_file_name = "CORA.cites.csv"
-
-# citations = pd.read_csv(cite_file_name)
+# citations = pd.read_csv(
+#     os.path.join(data_dir, "cora.cites"),
+#     sep="\t",
+#     header=None,
+#     names=["cited_paper_id","citing_paper_id"],
+#     )
 
 # print(citations)
 
-# content_file_name = "CORA.content.csv"
-
-# contents = pd.read_csv(content_file_name)
-# print("contents: \n", contents)
-
-# contents_dummies = pd.get_dummies(contents, columns=["word_cited_id"])
-# contents_word_vector = contents_dummies.groupby("paper_id").sum()
-# print("contents_word_vector: \n", contents_word_vector)
-
-
-# paper_file_name = "CORA.paper.csv"
-
-# papers_original = pd.read_csv(paper_file_name)
-# print("Original CORA paper.csv size: ", papers_original.shape)
-
-# papers = pd.merge(contents_word_vector,papers_original, how ="left", on="paper_id")
-# print("Original papers table size: ", papers_original.shape)
-# print("Converted papers table size: ", papers.shape)
+# papers = pd.read_csv(
+#     os.path.join(data_dir, "cora.content"),
+#     sep="\t",
+#     header=None,
+#     names=["paper_id"] + [f"word_{index}" for index in range(1433)] + ["class_label"],
+#     )
 
 # print(papers)
+    
+# method 2:
+# directly download CORA database tables (cites, content and paper) from 
+# relational-data.org using SQL workbench's table export function with csv 
+# format with "," separator. Then merge content and paper table to generate
+# similar table in example [1]'s format. Because original content table's
+# word_cited_id column is not sorted, so get_dummies function cannot get a
+# sorted collumns, but still ok for training or testing as long as software
+# remember the order of columns in generate contents_word_vector table.
+
+cite_file_name = "CORA.cites.csv"
+
+citations = pd.read_csv(cite_file_name)
+
+print(citations)
+
+content_file_name = "CORA.content.csv"
+
+contents = pd.read_csv(content_file_name)
+print("contents: \n", contents)
+
+contents_dummies = pd.get_dummies(contents, columns=["word_cited_id"])
+contents_word_vector = contents_dummies.groupby("paper_id").sum()
+print("contents_word_vector: \n", contents_word_vector)
+
+
+paper_file_name = "CORA.paper.csv"
+
+papers_original = pd.read_csv(paper_file_name)
+print("Original CORA paper.csv size: ", papers_original.shape)
+
+papers = pd.merge(contents_word_vector,papers_original, how ="left", on="paper_id")
+print("Original papers table size: ", papers_original.shape)
+print("Converted papers table size: ", papers.shape)
+
+print(papers)
 
 #scale inputs
 # paper id in the original CORA.paper.csv is already sorted and unique

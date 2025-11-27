@@ -311,7 +311,7 @@ class GNNNodeClassifier(tf.keras.Model):
                  num_classes, 
                  hidden_units, 
                  aggregation_type = "sum",
-                 combination_type = "concat",
+                 combination_type = "add",
                  dropout_rate = 0.2,
                  normalize = True,
                  *arg,
@@ -366,6 +366,8 @@ gnn_model = GNNNodeClassifier(graph_info=graph_info,
                               num_classes=num_classes,
                               hidden_units=hidden_units,
                               dropout_rate=dropout_rate,
+                              aggregation_type="sum",
+                              combination_type="gru",
                               name="gnn_model",)
 
 #input_node_indices = [1, 10, 100]
@@ -390,15 +392,3 @@ x_test_GNN = test_set_DataFrame["paper_id"]
 y_test_GNN = test_set_DataFrame["class_label"]
 _, test_accuracy_GNN = gnn_model.evaluate(x=x_test_GNN, y=y_test_GNN, verbose=0)
 print("GNN test accuracy = ", test_accuracy_GNN)
-        
-        
-        
-            
-        
-    
-    
-        
-        
-        
-        
-

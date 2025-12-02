@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
 """
+CSCE 566 class project report
+replication of “Graph Representation Learning and Node Classification” by 
+author: Khalid Salama [1]
+[1] online https://keras.io/examples/graph/gnn_citations/
+
 Created on Tue Nov 18 19:51:15 2025
 
 @author: Junhao (Timothy) Lou, C00567636
@@ -128,13 +133,13 @@ print("papers: \n", papers)
 # split newly indexed papers table 50% for training, 50% for test
 (training_set, test_set) = split_50_50(papers)
 
-print("training_set: \n", training_set)
-print("test_set: \n", test_set)
+# print("training_set shape: \n", training_set)
+# print("test_set shape: \n", test_set)
 
 training_set_DataFrame = pd.DataFrame.from_records(training_set)
-print(training_set_DataFrame)
+print("training_set_DataFrame shape: \n", training_set_DataFrame.shape)
 test_set_DataFrame = pd.DataFrame.from_records(test_set)
-print(test_set_DataFrame)
+print("test_set_DataFrame shape: \n", test_set_DataFrame.shape)
 
 
 # Section 2 - implement baseline feedforward neural network
@@ -146,7 +151,7 @@ def create_ffn(hidden_units,dropout_rate, name=None):
         fnn_layers.append(layers.Dense(units, activation=tf.nn.gelu))
     return keras.Sequential(fnn_layers,name=name)
 
-def baseline_ffn_model(hidden_units, num_classes, dropout_rate):
+def baseline_ffn_model(hidden_units, num_classes, dropout_rate=0.2):
     baseline_inputs = layers.Input(shape=(num_features,), name="input_features")
     x = create_ffn(hidden_units, dropout_rate, name=f"ffn_block1")(baseline_inputs)
     for i in range(4):
@@ -311,7 +316,7 @@ class GNNNodeClassifier(tf.keras.Model):
                  num_classes, 
                  hidden_units, 
                  aggregation_type = "sum",
-                 combination_type = "add",
+                 combination_type = "gru",
                  dropout_rate = 0.2,
                  normalize = True,
                  *arg,
@@ -375,19 +380,22 @@ gnn_model = GNNNodeClassifier(graph_info=graph_info,
 
 gnn_model.summary()
 
+# # example [1]'s method
 # train_data_GNN2 = pd.concat(training_set).sample(frac=1)
-# x_train_GNN2 = train_data_GNN2.paper_id.to_numpy()
-# y_train_GNN2 = train_data_GNN2["class_label"]
+# x_train_GNN = train_data_GNN2.paper_id.to_numpy()
+# y_train_GNN = train_data_GNN2["class_label"]
 
+# Junhao's method:
 x_train_GNN = training_set_DataFrame["paper_id"]
 y_train_GNN = training_set_DataFrame["class_label"]
 GNN_history = run_experiment(gnn_model, x_train_GNN, y_train_GNN)
 display_learning_curve(GNN_history)
 
+# # example [1]'s method
 # test_data_GNN2 = pd.concat(test_set).sample(frac=1)
-# x_test_GNN2 = test_data_GNN2.paper_id.to_numpy()
-# y_test_GNN2 = test_data_GNN2["class_label"]
-
+# x_test_GNN = test_data_GNN2.paper_id.to_numpy()
+# y_test_GNN = test_data_GNN2["class_label"]
+# Junhao's method:
 x_test_GNN = test_set_DataFrame["paper_id"]
 y_test_GNN = test_set_DataFrame["class_label"]
 _, test_accuracy_GNN = gnn_model.evaluate(x=x_test_GNN, y=y_test_GNN, verbose=0)
